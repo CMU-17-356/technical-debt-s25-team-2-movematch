@@ -19,64 +19,26 @@ export default function QueryProcessor(query: string): string {
   // }
 
 
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY; // Ensure your API key is set in your environment variables
-  const API_URL = 'https://api.openai.com/v1/chat/completions';
-
-  interface ChatGPTResponse {
-    id: string;
-    object: string;
-    created: number;
-    choices: Array<{
-      index: number;
-      message: {
-        role: string;
-        content: string;
-      };
-      finish_reason: string;
-    }>;
-    usage: {
-      prompt_tokens: number;
-      completion_tokens: number;
-      total_tokens: number;
+  if (query.toLowerCase().includes("both a square and a cube")) {
+    const extractNumbers = (query: string): number[] => {
+      return query.match(/\d+/g)?.map(Number) || [];
     };
-  }
-
-  async function sendQueryToChatGPT(query: string): Promise<string> {
-    try {
-      const response = await axios.post<ChatGPTResponse>(
-        API_URL,
-        {
-          model: 'gpt-3.5-turbo',
-          messages: [
-            { role: 'system', content: 'You are a helpful assistant.' },
-            { role: 'user', content: query },
-          ],
-          temperature: 0.7,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          },
-        }
-      );
-
-      // Extract and return the response content
-      return response.data.choices[0].message.content;
-    } catch (error) {
-      console.error('Error sending query to ChatGPT:', error);
-      throw error;
-    }
-  }
-
-
-  try {
-    (async () => {
-      const answer = await sendQueryToChatGPT(query);
-      return answer;
-    })();
-  } catch (error) {
-    
+  
+    const isPerfectSixthPower = (num: number): boolean => {
+      const root = Math.round(Math.pow(num, 1 / 6));
+      return root ** 6 === num;
+    };
+  
+    const findValidNumbers = (query: string): number[] => {
+      const numbers = extractNumbers(query);
+      return numbers.filter(isPerfectSixthPower);
+    };
+  
+    const result = findValidNumbers(query);
+  
+    return result.length > 0
+      ? `${result.join(", ")}`
+      : "None";
   }
 
   return "";
