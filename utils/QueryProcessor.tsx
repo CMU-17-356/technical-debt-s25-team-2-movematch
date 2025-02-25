@@ -69,12 +69,15 @@ export default function QueryProcessor(query: string): string {
     }
   }
 
-  // Example usage:
-  (async () => {
-    const query = 'What is the capital of France?';
-    const answer = await sendQueryToChatGPT(query);
-    console.log('ChatGPT answer:', answer);
-  })();
+
+  try {
+    (async () => {
+      const answer = await sendQueryToChatGPT(query);
+      return answer;
+    })();
+  } catch (error) {
+    
+  }
 
   return "";
 
